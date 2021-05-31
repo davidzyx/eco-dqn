@@ -513,6 +513,10 @@ class SpinSystemBase(ABC):
                 return (0,1)
             elif self.spin_basis == SpinBasis.SIGNED:
                 return (1,-1)
+            # elif self.spin_basis == SpinBasis.UNIFORM_A:
+            #     return (0, 0.25, 0.5, 0.75, 1)
+            # elif self.spin_basis == SpinBasis.UNIFORM_B:
+            #     return (-1, -0.5, 0, 0.5, 1)
         else:
             # If MDP is irreversible, only return the state of spins that haven't been flipped.
             if self.spin_basis==SpinBasis.BINARY:

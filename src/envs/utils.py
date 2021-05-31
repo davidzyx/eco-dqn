@@ -4,6 +4,7 @@ from enum import Enum
 
 import networkx as nx
 import numpy as np
+import powerlaw
 
 class EdgeType(Enum):
 
@@ -33,6 +34,8 @@ class SpinBasis(Enum):
 
     SIGNED = 1
     BINARY = 2
+    UNIFORM_A = 3
+    UNIFORM_B = 4
 
 class Observable(Enum):
     # Local observations that differ between nodes.
@@ -188,6 +191,57 @@ class RandomBarabasiAlbertGraphGenerator(GraphGenerator):
     def get(self, with_padding=False):
 
         g = nx.barabasi_albert_graph(self.n_spins, self.m_insertion_edges)
+        adj = np.multiply(nx.to_numpy_array(g), self.get_connection_mask())
+
+        # No self-connections (this modifies adj in-place).
+        np.fill_diagonal(adj, 0)
+
+        return self.pad_matrix(adj) if with_padding else adj
+
+class RandomHOTGraphGenerator(GraphGenerator):
+
+    def __init__(self, n_spins=20, m_insertion_edges=4, edge_type=EdgeType.DISCRETE):
+        super().__init__(n_spins, edge_type, False)
+
+        self.m_insertion_edges = m_insertion_edges
+
+        if self.edge_type == EdgeType.UNIFORM:
+            self.get_connection_mask = lambda : np.ones((self.n_spins,self.n_spins))
+        elif self.edge_type == EdgeType.DISCRETE:
+            def get_connection_mask():
+                mask = 2. * np.random.randint(2, size=(self.n_spins, self.n_spins)) - 1.
+                mask = np.tril(mask) + np.triu(mask.T, 1)
+                return mask
+            self.get_connection_mask = get_connection_mask
+        elif self.edge_type == EdgeType.RANDOM:
+            def get_connection_mask():
+                mask = 2.*np.random.rand(self.n_spins,self.n_spins)-1
+                mask = np.tril(mask) + np.triu(mask.T, 1)
+                return mask
+            self.get_connection_mask = get_connection_mask
+        else:
+            raise NotImplementedError()
+
+    def get(self, with_padding=False):
+        
+        g = nx.random_regular_graph(k, self.n_spins)
+
+        dist = powerlaw.Power_Law(xmin=5.255, parameters=[3], discrete=True)
+        np.mean(dist.generate_random(int(1e7), estimate_discrete=True))
+
+        ### After some experiments the xmin should be close to 5.255
+
+        dist = powerlaw.Power_Law(xmin=5.255, parameters=[3], discrete=True)
+        new_nodes_ns = dist.generate_random(11, estimate_discrete=True)
+        new_nodes_ns
+
+        new_node_i = 11
+        for core_node_i in range(11):
+            n_new_nodes = int(new_nodes_ns[core_node_i])
+            for _ in range(n_new_nodes):
+                g.add_edge(core_node_i, new_node_i)
+                new_node_i += 1
+
         adj = np.multiply(nx.to_numpy_array(g), self.get_connection_mask())
 
         # No self-connections (this modifies adj in-place).

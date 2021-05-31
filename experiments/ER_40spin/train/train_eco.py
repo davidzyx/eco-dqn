@@ -12,6 +12,7 @@ from src.envs.utils import (SetGraphGenerator,
                             RandomErdosRenyiGraphGenerator,
                             EdgeType, RewardSignal, ExtraAction,
                             OptimisationTarget, SpinBasis,
+                            Observable,
                             DEFAULT_OBSERVABLES)
 from src.networks.mpnn import MPNN
 
@@ -22,6 +23,292 @@ except ImportError:
     pass
 
 import time
+
+
+def run_subsets():
+    PERTUBED_OBSERVABLES_SETS = [
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        ### ------------------------ 6 choose 2 ------------------------ ###
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        ### ------------------------ 6 choose 1 ------------------------ ###
+        [
+            Observable.SPIN_STATE,                          #1
+            Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            Observable.TERMINATION_IMMANENCY                #7
+        ],
+        ### ------------------------ only 1 ------------------------ ###
+        [
+            Observable.SPIN_STATE,                          #1
+            # Observable.IMMEDIATE_REWARD_AVAILABLE,          #2
+            # Observable.TIME_SINCE_FLIP,                     #3
+            # Observable.DISTANCE_FROM_BEST_SCORE,            #4
+            # Observable.DISTANCE_FROM_BEST_STATE,            #5
+            # Observable.NUMBER_OF_GREEDY_ACTIONS_AVAILABLE,  #6
+            # Observable.TERMINATION_IMMANENCY                #7
+        ],
+    ]
+
+    for i, pertubed_set in enumerate(PERTUBED_OBSERVABLES_SETS):
+        save_loc = f"ER_40spin_p{str(i).zfill(2)}/eco"
+        if os.path.exists(save_loc):
+            continue
+        # print(save_loc)
+        run(save_loc=save_loc)
+
 
 def run(save_loc="ER_40spin/eco"):
 
@@ -97,7 +384,7 @@ def run(save_loc="ER_40spin/eco"):
     # SET UP AGENT
     ####################################################
 
-    nb_steps = 2500000
+    nb_steps = 1200000  # 2500000
 
     network_fn = lambda: MPNN(n_obs_in=train_envs[0].observation_space.shape[1],
                               n_layers=3,
@@ -215,4 +502,5 @@ def run(save_loc="ER_40spin/eco"):
     plt.clf()
 
 if __name__ == "__main__":
-    run()
+    # run()
+    run_subsets()

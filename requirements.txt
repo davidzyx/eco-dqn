@@ -1,0 +1,6 @@
+matplotlib
+numba
+networkx
+scipy
+pandas
+seaborn

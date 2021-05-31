@@ -1,3 +1,6 @@
+data/
+network/
+
 *__pycache__*
 .idea*
 .ipynb_checkpoints*
